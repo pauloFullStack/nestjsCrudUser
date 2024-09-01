@@ -1,0 +1,51 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '4001:3000'
+    environment:
+      - NODE_ENV=development
+    command: npm run start:dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+    container_name: nestjs-estudos
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - app-network
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    ports:
+      - '8081:8081'
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_BASICAUTH_USERNAME=siriustechmongodb
+      - ME_CONFIG_BASICAUTH_PASSWORD=o7mqriz9@Vps
+    networks:
+      - app-network
+    depends_on:
+      - mongodb
+
+volumes:
+  mongodb-data:
+
+networks:
+  app-network:
+    driver: bridge
